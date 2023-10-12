@@ -30,7 +30,7 @@ main = do
   let states = ["morto","vivo","zumbi"] {-Lista de estados possiveis-}
   matrixDimension
 
-{-Pupulando a matriz com valores randomizados da lista-}
+{-Populando a matriz com valores randomizados da lista-}
   gen <- getStdGen
   let values = take (rows * cols) $ map (states !!) $ randomRs (0, length states - 1) gen
       matrix = populateMatrix rows (chunksOf cols values)
