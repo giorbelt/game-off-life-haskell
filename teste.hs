@@ -1,6 +1,5 @@
-{-# LANGUAGE PackageImports #-}
-
 module Main where
+import Data.List (group)
 import System.Random (getStdGen, randomRIO)
 import Text.Read (readMaybe)
 import Control.Monad (replicateM)
@@ -27,6 +26,10 @@ populateMatrix rows cols = do
     let getRandomState = randomRIO (0, length states - 1)
     randomMatrix <- replicateM rows (replicateM cols getRandomState)
     return $ map (map (states !!)) randomMatrix
+
+{-Função para contar a ocorrencia de um mesmo elemento na matriz-}
+countValues :: Eq a => [[a]] -> a -> Int
+countValues matrix value = length $ concat $ filter ((== value) . head) $ group $ concat matrix
 
 main :: IO ()
 main = do
