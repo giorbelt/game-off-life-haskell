@@ -1,9 +1,12 @@
 {-# LANGUAGE PackageImports #-}
 
 module Main where
-import System.Random (getStdGen, randomRs)
+import  System.Random (getStdGen)
+
+
 import Text.Read (readMaybe)
 
+{-Função para pedir dimensões da matriz-}
 matrixDimension :: IO (Maybe (Int, Int))
 matrixDimension = do
   putStrLn "Enter the number of rows:"
@@ -16,21 +19,22 @@ matrixDimension = do
     r <- rows
     c <- cols
     return (r, c)
+      
 
+{-Função para popular matriz-}
 populateMatrix :: Int -> [a] -> [[a]]
 populateMatrix n values = take n $ repeat values
 
 main :: IO ()
 main = do
-  let states = ["morto", "vivo", "zumbi"]  -- Lista de estados possíveis
-  dimensions <- matrixDimension
-  case dimensions of
-    Just (rows, cols) -> do
-      gen <- getStdGen
-      let values = take (rows * cols) $ map (states !!) $ randomRs (0, length states - 1) gen
-          matrix = populateMatrix rows (chunksOf cols values)
-      print matrix
-    Nothing -> putStrLn "Invalid dimensions entered."
+  let states = ["morto","vivo","zumbi"] {-Lista de estados possiveis-}
+  matrixDimension
+
+{-Pupulando a matriz com valores randomizados da lista-}
+  gen <- getStdGen
+  let values = take (rows * cols) $ map (states !!) $ randomRs (0, length states - 1) gen
+      matrix = populateMatrix rows (chunksOf cols values)
+  print matrix
   where
     chunksOf :: Int -> [a] -> [[a]]
     chunksOf _ [] = []
