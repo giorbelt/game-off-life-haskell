@@ -12,6 +12,30 @@ import Control.Monad (replicateM)
 type Cell = Char
 type Board = [[Cell]]
 
+main :: IO ()
+main = do
+  dimensions <- matrixDimension
+  case dimensions of
+    Just (rows, cols) -> do
+      board <- createBoard rows cols
+      putStrLn "\nInitial Board:\n"
+      printBoard board
+
+      putStrLn "\nEnter the number of iterations (n):"
+      iterationsStr <- getLine
+      let n = read iterationsStr
+
+      let i = 1
+      let iterate i board
+            | i > n = return ()
+            | otherwise = do
+                let newBoard = iterateWithBoard board
+                putStrLn $ "\n" ++ show i ++ "ª iteração:\n"
+                printBoard newBoard
+                iterate (i + 1) newBoard
+      iterate i board
+    Nothing -> putStrLn "Invalid dimensions entered."
+
 matrixDimension :: IO (Maybe (Int, Int))
 matrixDimension = do
   putStrLn "Enter the number of rows:"
@@ -114,27 +138,3 @@ iterateWithBoard board =
 {-Função para contar a ocorrencia de um mesmo elemento na matriz-}
 countValues :: Eq a => [[a]] -> a -> Int
 countValues matrix value = length $ concat $ filter ((== value) . head) $ group $ concat matrix
-
-main :: IO ()
-main = do
-  dimensions <- matrixDimension
-  case dimensions of
-    Just (rows, cols) -> do
-      board <- createBoard rows cols
-      putStrLn "\nInitial Board:\n"
-      printBoard board
-
-      putStrLn "\nEnter the number of iterations (n):"
-      iterationsStr <- getLine
-      let n = read iterationsStr
-
-      let i = 1
-      let iterate i board
-            | i > n = return ()
-            | otherwise = do
-                let newBoard = iterateWithBoard board
-                putStrLn $ "\n" ++ show i ++ "ª iteração:\n"
-                printBoard newBoard
-                iterate (i + 1) newBoard
-      iterate i board
-    Nothing -> putStrLn "Invalid dimensions entered."
