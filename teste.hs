@@ -1,4 +1,7 @@
 {-# LANGUAGE ParallelListComp #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Replace case with fromMaybe" #-}
+{-# HLINT ignore "Evaluate" #-}
 
 module Main where
 import Data.List (group)
@@ -15,7 +18,6 @@ matrixDimension = do
   rowsStr <- getLine
   putStrLn "Enter the number of columns:"
   colsStr <- getLine
-  putStrLn "\n"
   let rows = readMaybe rowsStr :: Maybe Int
       cols = readMaybe colsStr :: Maybe Int
   return $ do
@@ -118,24 +120,15 @@ main = do
   dimensions <- matrixDimension
   case dimensions of
     Just (rows, cols) -> do
-      matrix <- createBoard rows cols
-      mapM_ (\row -> putStrLn (unwords [[c] | c <- row])) matrix
-
-  
-      let i = 1
-          j = 1
-      let adjacentCells = checkAdjacentCells matrix i j 
-      putStrLn "\nTest of the checkAdjacentCells function:\nAdjacent cell counts for cell (1,1):"
-      mapM_ (\(state, count) -> putStrLn $ state : " - " ++ show count) adjacentCells
+      board <- createBoard rows cols
+      putStrLn "\nInitial Board:\n"
+      printBoard board
 
       putStrLn "\nEnter the number of iterations (n):"
       iterationsStr <- getLine
       let n = read iterationsStr
 
-      board <- createBoard rows cols
-      putStrLn "Initial Board:\n"
-      printBoard board
-
+      let i = 1
       let iterate i board
             | i > n = return ()
             | otherwise = do
