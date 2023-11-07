@@ -30,11 +30,14 @@ main = do
             | i > n = return ()
             | otherwise = do
                 let newBoard = iterateWithBoard board
-                putStrLn $ "\n" ++ show i ++ "ª iteração:\n"
-                printBoard newBoard
-                iterate (i + 1) newBoard
+                if newBoard == board
+                  then putStrLn $ "Estabilidade após " ++ show (i-1) ++ " iterações."
+                  else do 
+                    putStrLn $ "\n" ++ show i ++ "ª iteração:\n"
+                    printBoard newBoard
+                    iterate (i + 1) newBoard
       iterate i board
-    Nothing -> putStrLn "Invalid dimensions entered."
+    Nothing -> putStrLn "Dimensões inválidas."
 
 matrixDimension :: IO (Maybe (Int, Int))
 matrixDimension = do
@@ -134,7 +137,3 @@ iterateWithBoard board =
     where 
       rows = length board
       cols = length (head board)
-
-{-Função para contar a ocorrencia de um mesmo elemento na matriz-}
-countValues :: Eq a => [[a]] -> a -> Int
-countValues matrix value = length $ concat $ filter ((== value) . head) $ group $ concat matrix
