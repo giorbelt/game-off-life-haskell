@@ -8,6 +8,8 @@ import Data.List (group)
 import System.Random (getStdGen, randomRIO)
 import Text.Read (readMaybe)
 import Control.Monad (replicateM)
+import System.IO
+import Data.List (intercalate)
 
 type Cell = Char
 type Board = [[Cell]]
@@ -17,7 +19,7 @@ main = do
   dimensions <- matrixDimension
   case dimensions of
     Just (rows, cols) -> do
-      board <- createBoard rows cols
+      board <- createBoard rows cols "entradas.txt"
       putStrLn "\nInitial Board:\n"
       printBoard board
 
@@ -52,18 +54,21 @@ matrixDimension = do
     c <- cols
     return (r, c)
 
-states :: [Char]
-states = ['v', 'm', 'z']
 
-createBoard :: Int -> Int -> IO Board
-createBoard rows cols = do
-  gen <- getStdGen
-  let getRandomState = randomRIO (0, length states - 1)
-  randomMatrix <- replicateM rows (replicateM cols getRandomState)
-  return $ map (map (states !!)) randomMatrix
+
+createBoard :: Int -> Int -> FilePath -> IO Board
+createBoard rows cols filePath = do
+  fileContent <- readFile filePath
+  let fileLines = lines fileContent
+      matrixData = take (rows * cols) fileLines
+  return $ map (take cols) matrixData
+
+
 
 printBoard :: Board -> IO ()
 printBoard = mapM_ (\row -> putStrLn (unwords [[c] | c <- row]))
+
+
 
 checkAdjacentCells :: Board -> Int -> Int -> [(Cell, Int)]
 checkAdjacentCells board i j = 
