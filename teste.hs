@@ -4,16 +4,16 @@
 {-# HLINT ignore "Evaluate" #-}
 
 module Main where
-import Data.List (group)
+import Data.List ( group, intercalate )
 import System.Random (getStdGen, randomRIO)
 import Text.Read (readMaybe)
 import Control.Monad (replicateM)
 import System.IO
-import Data.List (intercalate)
 
 type Cell = Char
 type Board = [[Cell]]
 
+-- antes de iniciar a execução do arquivo teste.hs, insira dados no arquivo entradas.txt
 main :: IO ()
 main = do
   dimensions <- matrixDimension
@@ -34,7 +34,7 @@ main = do
                 let newBoard = iterateWithBoard board
                 if newBoard == board
                   then putStrLn $ "Estabilidade após " ++ show (i-1) ++ " iterações."
-                  else do 
+                  else do
                     putStrLn $ "\n" ++ show i ++ "ª iteração:\n"
                     printBoard newBoard
                     iterate (i + 1) newBoard
@@ -61,23 +61,26 @@ createBoard rows cols filePath = do
   fileContent <- readFile filePath
   let fileLines = lines fileContent
       matrixData = take (rows * cols) fileLines
-  return $ map (take cols) matrixData
+  return $ formMatrix rows cols (concat matrixData)
+
+formMatrix :: Int -> Int -> [a] -> [[a]]
+formMatrix i j lst = take i $ map (take j) $ iterate (drop j) lst
 
 
 
 printBoard :: Board -> IO ()
-printBoard = mapM_ (\row -> putStrLn (unwords [[c] | c <- row]))
+printBoard = mapM_ (\row -> putStrLn (unwords [c : " " | c <- row]))
 
 
 
 checkAdjacentCells :: Board -> Int -> Int -> [(Cell, Int)]
-checkAdjacentCells board i j = 
+checkAdjacentCells board i j =
     let neighbors = [
-          (x, y) | 
-          x <- [i - 1..i + 1], 
-          y <- [j - 1..j + 1], 
-          x /= i || y /= j, 
-          x >= 0, y >= 0, 
+          (x, y) |
+          x <- [i - 1..i + 1],
+          y <- [j - 1..j + 1],
+          x /= i || y /= j,
+          x >= 0, y >= 0,
           x < length board, y < length (head board)
           ]
         adjacentStates = [board !! x !! y | (x, y) <- neighbors]
@@ -85,13 +88,13 @@ checkAdjacentCells board i j =
     in countStates
 
 infecction :: [(Cell, Int)] -> Bool
-infecction countStates = case lookup 'z' countStates of 
+infecction countStates = case lookup 'z' countStates of
   Just qz -> qz >= 1
   Nothing -> False
 
 subpopulation :: [(Cell, Int)] -> Bool
-subpopulation countStates = 
-  let qv = case lookup 'v' countStates of 
+subpopulation countStates =
+  let qv = case lookup 'v' countStates of
         Just q -> q
         Nothing -> 0
       qz = case lookup 'z' countStates of
@@ -100,7 +103,7 @@ subpopulation countStates =
   in qv < 2 && qz == 0
 
 superpopulation :: [(Cell, Int)] -> Bool
-superpopulation countStates = 
+superpopulation countStates =
     let qv = case lookup 'v' countStates of
             Just q -> q
             Nothing -> 0
@@ -139,6 +142,6 @@ updateCell currCell adjacentCells
 iterateWithBoard :: [[Char]] -> [[Char]]
 iterateWithBoard board =
   [[updateCell (board !! i !! j) (checkAdjacentCells board i j) | j <- [0..cols - 1]] | i <- [0..rows - 1]]
-    where 
+    where
       rows = length board
       cols = length (head board)
