@@ -5,7 +5,6 @@
 
 module Main where
 import Data.List ( group, intercalate )
-import System.Random (getStdGen, randomRIO)
 import Text.Read (readMaybe)
 import Control.Monad (replicateM)
 import System.IO
@@ -20,10 +19,10 @@ main = do
   case dimensions of
     Just (rows, cols) -> do
       board <- createBoard rows cols "entradas.txt"
-      putStrLn "\nInitial Board:\n"
+      putStrLn "\nMatriz inicial:\n"
       printBoard board
 
-      putStrLn "\nEnter the number of iterations (n):"
+      putStrLn "\nInforme o número de interações (n):"
       iterationsStr <- getLine
       let n = read iterationsStr
 
@@ -43,9 +42,9 @@ main = do
 
 matrixDimension :: IO (Maybe (Int, Int))
 matrixDimension = do
-  putStrLn "Enter the number of rows:"
+  putStrLn "Informe o numero de linhas:"
   rowsStr <- getLine
-  putStrLn "Enter the number of columns:"
+  putStrLn "Informe o numero de colunas:"
   colsStr <- getLine
   let rows = readMaybe rowsStr :: Maybe Int
       cols = readMaybe colsStr :: Maybe Int
